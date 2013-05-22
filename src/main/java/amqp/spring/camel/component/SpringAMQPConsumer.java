@@ -26,7 +26,6 @@ import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.retry.policy.NeverRetryPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.ErrorHandler;
 
@@ -170,9 +169,7 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
          */
         public final Advice[] getAdviceChain() {
             RetryTemplate retryRule = new RetryTemplate();
-            SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-            retryPolicy.setMaxAttempts(0);
-            retryRule.setRetryPolicy(retryPolicy);
+            retryRule.setRetryPolicy(new NeverRetryPolicy());
             
             StatefulRetryOperationsInterceptorFactoryBean retryOperation = new StatefulRetryOperationsInterceptorFactoryBean();
             retryOperation.setRetryOperations(retryRule);
@@ -182,7 +179,7 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
                 retryOperation.setMessageRecoverer(new MessageRecoverer() {
                     @Override
                     public void recover(Message message, Throwable cause) {
-                        throw new AmqpRejectAndDontRequeueException(cause.getMessage());
+                        throw new AmqpRejectAndDontRequeueException(cause == null ? "" : cause.getMessage());
                     }
                 });
             }
