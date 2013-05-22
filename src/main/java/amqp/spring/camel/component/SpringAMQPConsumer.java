@@ -45,6 +45,8 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
     private static transient final Logger LOG = LoggerFactory.getLogger(SpringAMQPConsumer.class);
     private static final String TTL_QUEUE_ARGUMENT = "x-message-ttl";
     private static final String HA_POLICY_ARGUMENT = "x-ha-policy";
+    private static final String DEAD_LETTER_EXCHANGE_ARGUMENT = "x-dead-letter-exchange";
+    private static final String DEAD_LETTER_ROUTING_KEY_ARGUMENT = "x-dead-letter-routing-key";
 
     protected SpringAMQPEndpoint endpoint;
     private RabbitMQMessageListener messageListener;
@@ -130,6 +132,9 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
             //Transactions are currently not supported
             this.listenerContainer.setChannelTransacted(false);
             this.listenerContainer.setAcknowledgeMode(AcknowledgeMode.NONE);
+
+            // TODO???
+            //this.listenerContainer.setDefaultRequeueRejected(endpoint.getDeadLetterExchangeName() == null);
         }
 
         public void start() {
@@ -346,6 +351,10 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
                 queueArguments.put(TTL_QUEUE_ARGUMENT, endpoint.getTimeToLive());
             if(endpoint.isHa() )
                 queueArguments.put(HA_POLICY_ARGUMENT, "all");
+            if(endpoint.getDeadLetterExchangeName() != null)
+                queueArguments.put(DEAD_LETTER_EXCHANGE_ARGUMENT, endpoint.getDeadLetterExchangeName());
+            if(endpoint.getDeadLetterRoutingKey() != null)
+                queueArguments.put(DEAD_LETTER_ROUTING_KEY_ARGUMENT, endpoint.getDeadLetterRoutingKey());
 
             //Declare queue
             Queue queue = new Queue(this.endpoint.queueName, this.endpoint.durable, this.endpoint.exclusive, this.endpoint.autodelete, queueArguments);

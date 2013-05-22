@@ -47,6 +47,8 @@ public class SpringAMQPEndpoint extends DefaultEndpoint {
     int concurrentConsumers = 1;
     int prefetchCount = 1;
     Integer timeToLive = null;
+    String deadLetterExchangeName;
+    String deadLetterRoutingKey;
     
     //The second and third parameters to the URI can be interchangable based on the context.
     //Place them here until we determine if we're a consumer or producer.
@@ -228,6 +230,22 @@ public class SpringAMQPEndpoint extends DefaultEndpoint {
         this.timeToLive = timeToLive;
     }
 
+    public String getDeadLetterExchangeName() {
+        return deadLetterExchangeName;
+    }
+
+    public void setDeadLetterExchangeName(String deadLetterExchangeName) {
+        this.deadLetterExchangeName = deadLetterExchangeName;
+    }
+
+    public String getDeadLetterRoutingKey() {
+        return deadLetterRoutingKey;
+    }
+
+    public void setDeadLetterRoutingKey(String deadLetterRoutingKey) {
+        this.deadLetterRoutingKey = deadLetterRoutingKey;
+    }
+
     @Override
     public boolean isSingleton() {
         return false;
@@ -248,7 +266,10 @@ public class SpringAMQPEndpoint extends DefaultEndpoint {
         builder.append("&transactional=").append(this.transactional);
         if ( this.ha == true)
         	builder.append("&x-ha-policy=all");
-        
+        if (this.deadLetterExchangeName != null)
+            builder.append("&x-dead-letter-exchange=").append(deadLetterExchangeName);
+        if (this.deadLetterRoutingKey != null)
+            builder.append("&x-dead-letter-routing-key=").append(deadLetterRoutingKey);
         return builder.toString();        
     }
     

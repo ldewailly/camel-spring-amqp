@@ -12,7 +12,7 @@
     
     <groupId>com.bluelock</groupId>
     <artifactId>camel-spring-amqp</artifactId>
-    <version>1.5</version>
+    <version>1.5.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Camel :: Spring-AMQP</name>
@@ -28,9 +28,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/Bluelock/camel-spring-amqp.git</connection>
-        <developerConnection>scm:git:git@github.com:Bluelock/camel-spring-amqp.git</developerConnection>
-        <url>git@github.com:Bluelock/camel-spring-amqp.git</url>
+        <connection>scm:git:git://github.com/ldewailly/camel-spring-amqp.git</connection>
+        <developerConnection>scm:git:git@github.com:ldewailly/camel-spring-amqp.git</developerConnection>
+        <url>git@github.com:ldewailly/camel-spring-amqp.git</url>
     </scm>
 
     <developers>
@@ -56,6 +56,11 @@
             <id>deckerego</id>
             <name>John Ellis</name>
             <email>deckerego@gmail.com</email>
+        </developer>
+        <developer>
+            <id>ldewailly</id>
+            <name>Ludovic Dewailly</name>
+            <email>me@ldewailly.com</email>
         </developer>
     </developers>
 
