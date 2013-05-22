@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.AmqpIOException;
+import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Address;
 import org.springframework.amqp.core.Binding;
@@ -29,6 +30,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageKeyGenerator;
+import org.springframework.amqp.rabbit.retry.MessageRecoverer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.retry.policy.NeverRetryPolicy;
@@ -179,6 +181,15 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
             StatefulRetryOperationsInterceptorFactoryBean retryOperation = new StatefulRetryOperationsInterceptorFactoryBean();
             retryOperation.setRetryOperations(retryRule);
             retryOperation.setMessageKeyGeneretor(new DefaultKeyGenerator());
+            if (endpoint.getDeadLetterExchangeName() != null) {
+                // will trigger sending the message to the DL exchange
+                retryOperation.setMessageRecoverer(new MessageRecoverer() {
+                    @Override
+                    public void recover(Message message, Throwable cause) {
+                        throw new AmqpRejectAndDontRequeueException("");
+                    }
+                });
+            }
             
             return new Advice[] { retryOperation.getObject() };
         }
