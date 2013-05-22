@@ -125,10 +125,11 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
 
             //Transactions are currently not supported
             this.listenerContainer.setChannelTransacted(false);
-            this.listenerContainer.setAcknowledgeMode(AcknowledgeMode.NONE);
-
-            // TODO???
-            //this.listenerContainer.setDefaultRequeueRejected(endpoint.getDeadLetterExchangeName() == null);
+            if (endpoint.isDLQEnabled()) {
+                this.listenerContainer.setAcknowledgeMode(AcknowledgeMode.AUTO);
+            } else {
+                this.listenerContainer.setAcknowledgeMode(AcknowledgeMode.NONE);
+            }
         }
 
         public void start() {
@@ -175,7 +176,7 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
             StatefulRetryOperationsInterceptorFactoryBean retryOperation = new StatefulRetryOperationsInterceptorFactoryBean();
             retryOperation.setRetryOperations(retryRule);
             retryOperation.setMessageKeyGeneretor(new DefaultKeyGenerator());
-            if (endpoint.getDeadLetterExchangeName() != null) {
+            if (endpoint.isDLQEnabled()) {
                 // will trigger sending the message to the DL exchange
                 retryOperation.setMessageRecoverer(new MessageRecoverer() {
                     @Override

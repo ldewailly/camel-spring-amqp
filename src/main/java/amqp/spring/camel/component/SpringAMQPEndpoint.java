@@ -246,6 +246,10 @@ public class SpringAMQPEndpoint extends DefaultEndpoint {
         this.deadLetterRoutingKey = deadLetterRoutingKey;
     }
 
+    public boolean isDLQEnabled() {
+        return deadLetterExchangeName != null;
+    }
+
     @Override
     public boolean isSingleton() {
         return false;
