@@ -170,7 +170,7 @@ public class SpringAMQPConsumer extends DefaultConsumer implements ConnectionLis
         public final Advice[] getAdviceChain() {
             RetryTemplate retryRule = new RetryTemplate();
             SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-            retryPolicy.setMaxAttempts(0);
+            retryPolicy.setMaxAttempts(1);
             retryRule.setRetryPolicy(retryPolicy);
             
             StatefulRetryOperationsInterceptorFactoryBean retryOperation = new StatefulRetryOperationsInterceptorFactoryBean();
